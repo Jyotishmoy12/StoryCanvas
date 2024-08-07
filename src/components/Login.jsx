@@ -14,7 +14,7 @@ const Login = () => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/UploadStories');
+      navigate('/Upload');
     } catch (error) {
       setError(error.message);
     }
@@ -24,7 +24,7 @@ const Login = () => {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      navigate('/UploadStories');
+      navigate('/Upload');
     } catch (error) {
       setError(error.message);
     }

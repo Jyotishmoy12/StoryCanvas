@@ -1,0 +1,35 @@
+.other-story-view {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .other-story-view h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+  }
+  
+  .story-image {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+  }
+  
+  .story-content {
+    line-height: 1.6;
+    font-size: 1.1em;
+  }
+  
+  .back-button {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .back-button:hover {
+    background-color: #0056b3;
+  }

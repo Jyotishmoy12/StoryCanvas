@@ -5,7 +5,9 @@ import ViewOtherStories from './components/ViewOtherStories'
 import Account from './components/account'
 import UploadStories from './components/UploadStories'
 import SignUp from './components/SignUp';
-import Login from './components/Login'
+import Login from './components/Login';
+import StoryDetails from './components/StoryDetails';
+import OtherStoryView from './components/OtherStoryView';
 
 const App = () => {
   return (
@@ -18,6 +20,8 @@ const App = () => {
           <Route path="/upload" element={<UploadStories />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/story/:id" element={<StoryDetails />} />
+          <Route path="/other-story/:id" element={<OtherStoryView />} />
         </Routes>
       </div>
     </Router>

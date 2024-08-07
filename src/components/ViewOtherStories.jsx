@@ -1,75 +1,63 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../firebase';
-import { collection, query, orderBy, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, orderBy, getDocs } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+import '../styles/ViewOtherStories.css';
+import Navbar from "../components/Navbar"
 
 function ViewOtherStories() {
   const [stories, setStories] = useState([]);
-  const [selectedStory, setSelectedStory] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchStories();
+    fetchAllStories();
   }, []);
 
-  const fetchStories = async () => {
-    const q = query(collection(db, 'stories'), orderBy('createdAt', 'desc'));
-    const querySnapshot = await getDocs(q);
-    const storiesData = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    setStories(storiesData);
-  };
-
-  const handleStoryClick = (story) => {
-    setSelectedStory(story);
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this story?')) {
-      try {
-        await deleteDoc(doc(db, 'stories', id));
-        alert('Story deleted successfully');
-        fetchStories();
-        if (selectedStory && selectedStory.id === id) {
-          setSelectedStory(null);
-        }
-      } catch (error) {
-        console.error('Error deleting story: ', error);
-        alert('An error occurred while deleting the story.');
-      }
+  const fetchAllStories = async () => {
+    try {
+      const q = query(
+        collection(db, 'stories'),
+        orderBy('createdAt', 'desc')
+      );
+      const querySnapshot = await getDocs(q);
+      const storiesData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      console.log("Fetched stories:", storiesData);
+      setStories(storiesData);
+    } catch (error) {
+      console.error("Error fetching stories: ", error);
+      alert('Error fetching stories. Please try again.');
     }
   };
 
-  const handleLogout = () => {
-    // Implement logout functionality here
-    alert('Logout functionality to be implemented');
+  const handleStoryClick = (storyId) => {
+    navigate(`/other-story/${storyId}`);
   };
 
   return (
-    <div className="container">
-      <h2>View Stories</h2>
-      <button className="btn btn-logout" onClick={handleLogout}>Logout</button>
-      <div className="story-cards">
-        {stories.map(story => (
-          <div key={story.id} className="story-card" onClick={() => handleStoryClick(story)}>
-            {story.imageUrl && <img src={story.imageUrl} alt={story.title} />}
-            <div className="story-card-content">
-              <h3>{story.title}</h3>
-              <p>{story.content.substring(0, 100)}...</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      {selectedStory && (
-        <div className="story-detail">
-          <h2>{selectedStory.title}</h2>
-          {selectedStory.imageUrl && <img src={selectedStory.imageUrl} alt={selectedStory.title} />}
-          <p>{selectedStory.content}</p>
-          <button className="btn btn-close" onClick={() => setSelectedStory(null)}>Close</button>
-          <button className="btn btn-delete" onClick={() => handleDelete(selectedStory.id)}>Delete Story</button>
+    <>
+      <Navbar/>
+      <div className="view-stories-container">
+        <div className="header-actions">
+          <h2>View Stories</h2>
         </div>
-      )}
-    </div>
+        <div className="stories-section">
+          <div className="story-grid">
+            {stories.map(story => (
+              <div key={story.id} className="story-card" onClick={() => handleStoryClick(story.id)}>
+                {story.imageUrl && <img src={story.imageUrl} alt={story.title} className="story-card-image" />}
+                <div className="story-card-content">
+                  <h4 className="story-card-title">{story.title}</h4>
+                  <p className="story-card-description">{story.content.substring(0, 100)}...</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 

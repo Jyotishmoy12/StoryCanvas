@@ -1,3 +1,4 @@
+
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
@@ -9,13 +10,13 @@ import { getFirestore } from 'firebase/firestore';
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAMQargjWdwkHjNL0suOplRsUXTxKJpmOo",
-  authDomain: "storypedia-b5784.firebaseapp.com",
-  projectId: "storypedia-b5784",
-  storageBucket: "storypedia-b5784.appspot.com",
-  messagingSenderId: "51415037276",
-  appId: "1:51415037276:web:5530d0548ad33ef988fd99",
-  measurementId: "G-7JBH2D67CZ"
+  apiKey: "AIzaSyCgwGSxJ_7jm3VO4p2cubG9mBtGcnm2Uyo",
+  authDomain: "storycanvas-af6c7.firebaseapp.com",
+  projectId: "storycanvas-af6c7",
+  storageBucket: "storycanvas-af6c7.appspot.com",
+  messagingSenderId: "810382228314",
+  appId: "1:810382228314:web:5f53b583e310a803a91163",
+  measurementId: "G-244CRYHXD9"
 };
 
 // Initialize Firebase

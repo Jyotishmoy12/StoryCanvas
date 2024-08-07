@@ -27,7 +27,7 @@ const handleGoogleSignIn=async (e) => {
   const provider=new GoogleAuthProvider();
   try{
     await signInWithPopup(auth, provider)
-    navigate('/UploadStories')
+    navigate('/Upload')
   }
   catch(error){
     setError(error.message)
