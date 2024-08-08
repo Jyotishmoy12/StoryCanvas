@@ -1,34 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import { db, storage, auth } from '../../firebase';
-import { collection, addDoc, query, orderBy, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, query, where, orderBy, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import '../styles/UploadStories.css';
 import Navbar from './Navbar';
+
+// Initialize the Gemini API
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+
+// Stability AI API key
+const STABILITY_API_KEY = import.meta.env.VITE_STABILITY_API_KEY;
 
 function UploadStories() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [image, setImage] = useState(null);
-  const [stories, setStories] = useState([]);
+  const [userStories, setUserStories] = useState([]);
+  const [showAIPrompt, setShowAIPrompt] = useState(false);
+  const [aiPrompt, setAIPrompt] = useState('');
+  const [generatingStory, setGeneratingStory] = useState(false);
+  const [showImagePrompt, setShowImagePrompt] = useState(false);
+  const [imagePrompt, setImagePrompt] = useState('');
+  const [generatedImage, setGeneratedImage] = useState(null);
+  const [generatingImage, setGeneratingImage] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchStories();
-  }, []);
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        fetchUserStories(user.uid);
+      } else {
+        setUserStories([]);
+        navigate('/');
+      }
+    });
 
-  const fetchStories = async () => {
+    return () => unsubscribe();
+  }, [navigate]);
+
+  const fetchUserStories = async (userId) => {
     try {
-      const q = query(collection(db, 'stories'), orderBy('createdAt', 'desc'));
+      const q = query(
+        collection(db, 'stories'),
+        where('userId', '==', userId),
+        orderBy('createdAt', 'desc')
+      );
       const querySnapshot = await getDocs(q);
       const storiesData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-      setStories(storiesData);
+      setUserStories(storiesData);
     } catch (error) {
-      console.error("Error fetching stories: ", error);
+      console.error("Error fetching user stories: ", error);
     }
   };
 
@@ -45,12 +72,12 @@ function UploadStories() {
       alert('You must be logged in to upload a story.');
       return;
     } 
-
+  
     if (!title || !content) {
       alert('Please fill in all fields');
       return;
     }
-
+  
     try {
       let imageUrl = '';
       if (image) {
@@ -58,20 +85,25 @@ function UploadStories() {
         await uploadBytes(imageRef, image);
         imageUrl = await getDownloadURL(imageRef);
       }
-
-      await addDoc(collection(db, 'stories'), {
+  
+      const newStory = {
         title,
         content,
         imageUrl,
         createdAt: new Date(),
-        userId: auth.currentUser.uid
-      });
-
+        userId: auth.currentUser.uid,
+        generatedImage: generatedImage, // Add this line
+        generatedContent: content.startsWith('AI Generated Story') ? content : null // Add this line
+      };
+  
+      const docRef = await addDoc(collection(db, 'stories'), newStory);
+      setUserStories(prevStories => [{id: docRef.id, ...newStory}, ...prevStories]);
+  
       setTitle('');
       setContent('');
       setImage(null);
+      setGeneratedImage(null); // Add this line
       alert('Story uploaded successfully!');
-      fetchStories();
     } catch (error) {
       console.error('Error uploading story: ', error);
       alert('An error occurred while uploading the story.');
@@ -83,8 +115,8 @@ function UploadStories() {
     if (window.confirm('Are you sure you want to delete this story?')) {
       try {
         await deleteDoc(doc(db, 'stories', id));
+        setUserStories(prevStories => prevStories.filter(story => story.id !== id));
         alert('Story deleted successfully');
-        fetchStories();
       } catch (error) {
         console.error('Error deleting story: ', error);
         alert('An error occurred while deleting the story.');
@@ -102,6 +134,93 @@ function UploadStories() {
       navigate('/');
     } catch (error) {
       console.error('Error signing out: ', error);
+    }
+  };
+
+  const handleAIGenerate = async () => {
+    if (!aiPrompt.trim()) {
+      alert('Please enter a prompt for the AI.');
+      return;
+    }
+
+    setGeneratingStory(true);
+    try {
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      const result = await model.generateContent(aiPrompt);
+      const response = await result.response;
+      const generatedText = response.text();
+      
+      setTitle('AI Generated Story');
+      setContent(generatedText);
+      setShowAIPrompt(false);
+    } catch (error) {
+      console.error('Error generating story with AI:', error);
+      alert('An error occurred while generating the story. Please try again.');
+    } finally {
+      setGeneratingStory(false);
+    }
+  };
+
+  const handleImageGenerate = async () => {
+    if (!imagePrompt.trim()) {
+      alert('Please enter a prompt for the image generation.');
+      return;
+    }
+
+    setGeneratingImage(true);
+    try {
+      const response = await fetch(
+        "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${STABILITY_API_KEY}`,
+          },
+          body: JSON.stringify({
+            text_prompts: [
+              {
+                text: imagePrompt,
+              },
+            ],
+            cfg_scale: 7,
+            height: 1024,
+            width: 1024,
+            steps: 30,
+            samples: 1,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Non-200 response: ${await response.text()}`);
+      }
+
+      const responseJSON = await response.json();
+      const base64Image = responseJSON.artifacts[0].base64;
+      setGeneratedImage(`data:image/png;base64,${base64Image}`);
+      setShowImagePrompt(false);
+    } catch (error) {
+      console.error('Error generating image with AI:', error);
+      alert('An error occurred while generating the image. Please try again.');
+    } finally {
+      setGeneratingImage(false);
+    }
+  };
+
+  const handleUseGeneratedImage = async () => {
+    if (generatedImage) {
+      try {
+        const response = await fetch(generatedImage);
+        const blob = await response.blob();
+        const file = new File([blob], "ai-generated-image.png", { type: "image/png" });
+        setImage(file);
+        setGeneratedImage(null);
+      } catch (error) {
+        console.error('Error using generated image:', error);
+        alert('An error occurred while using the generated image. Please try again.');
+      }
     }
   };
 
@@ -140,30 +259,93 @@ function UploadStories() {
                 <input type="file" id="image" onChange={handleImageChange} />
               </label>
               {image && <span className="file-name">{image.name}</span>}
+              {generatedImage && (
+                <div className="generated-image-preview">
+                  <img src={generatedImage} alt="AI Generated" />
+                  <button onClick={handleUseGeneratedImage}>Use This Image</button>
+                </div>
+              )}
             </div>
             <button type="submit" className="submit-btn">Upload Story</button>
           </form>
 
           <div className="stories-section">
             <h3>Your Stories</h3>
-            <div className="story-grid">
-              {stories.map(story => (
-                <div key={story.id} className="story-card glassmorphism" onClick={() => handleStoryClick(story.id)}>
-                  {story.imageUrl && <img src={story.imageUrl} alt={story.title} className="story-card-image" />}
-                  <div className="story-card-content">
-                    <h4 className="story-card-title">{story.title}</h4>
-                    <p className="story-card-description">{story.content.substring(0, 100)}...</p>
-                    {auth.currentUser && story.userId === auth.currentUser.uid && (
+            {userStories.length > 0 ? (
+              <div className="story-grid">
+                {userStories.map(story => (
+                  <div key={story.id} className="story-card glassmorphism" onClick={() => handleStoryClick(story.id)}>
+                    {story.imageUrl && <img src={story.imageUrl} alt={story.title} className="story-card-image" />}
+                    <div className="story-card-content">
+                      <h4 className="story-card-title">{story.title}</h4>
+                      <p className="story-card-description">{story.content.substring(0, 100)}...</p>
                       <div className="story-card-actions">
                         <button className="btn-delete" onClick={(e) => handleDelete(story.id, e)}>Delete</button>
                       </div>
-                    )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p>You haven't uploaded any stories yet.</p>
+            )}
           </div>
         </div>
+
+        {/* AI Text Generation Button */}
+        <button className="ai-float-button text-ai" onClick={() => setShowAIPrompt(true)}>
+          AI Text
+        </button>
+
+        {/* AI Image Generation Button */}
+        <button className="ai-float-button image-ai" onClick={() => setShowImagePrompt(true)}>
+          AI Image
+        </button>
+
+        {/* AI Text Prompt Modal */}
+        {showAIPrompt && (
+          <div className="ai-prompt-modal">
+            <div className="ai-prompt-content">
+              <h2>Generate a Story with AI</h2>
+              <textarea
+                value={aiPrompt}
+                onChange={(e) => setAIPrompt(e.target.value)}
+                placeholder="Enter a prompt for the AI..."
+              />
+              <div className="ai-prompt-actions">
+                <button onClick={handleAIGenerate} disabled={generatingStory}>
+                  {generatingStory ? 'Generating...' : 'Generate'}
+                </button>
+                <button onClick={() => setShowAIPrompt(false)}>Cancel</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* AI Image Prompt Modal */}
+        {showImagePrompt && (
+          <div className="ai-prompt-modal">
+            <div className="ai-prompt-content">
+              <h2>Generate an Image with AI</h2>
+              <textarea
+                value={imagePrompt}
+                onChange={(e) => setImagePrompt(e.target.value)}
+                placeholder="Describe the image you want to generate..."
+              />
+              <div className="ai-prompt-actions">
+                <button onClick={handleImageGenerate} disabled={generatingImage}>
+                  {generatingImage ? 'Generating...' : 'Generate Image'}
+                </button>
+                <button onClick={() => setShowImagePrompt(false)}>Cancel</button>
+              </div>
+              {generatingImage && (
+                <div className="generating-indicator">
+                  <span>AI is creating your image...</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

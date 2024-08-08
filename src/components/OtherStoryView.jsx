@@ -6,6 +6,7 @@ import '../styles/OtherStoryView.css';
 
 function OtherStoryView() {
   const [story, setStory] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -21,21 +22,33 @@ function OtherStoryView() {
         }
       } catch (error) {
         console.error("Error fetching story: ", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchStory();
   }, [id, navigate]);
 
-  if (!story) {
-    return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="loader-container">
+        <div className="loader"></div>
+      </div>
+    );
   }
 
   return (
     <div className="other-story-view">
-      <h1>{story.title}</h1>
-      {story.imageUrl && <img src={story.imageUrl} alt={story.title} className="story-image" />}
-      <p className="story-content">{story.content}</p>
+      <div className="story-container">
+        <h1 className="story-title">{story.title}</h1>
+        {story.imageUrl && (
+          <div className="image-container">
+            <img src={story.imageUrl} alt={story.title} className="story-image" />
+          </div>
+        )}
+        <p className="story-content">{story.content}</p>
+      </div>
     </div>
   );
 }
