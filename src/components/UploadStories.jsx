@@ -26,6 +26,7 @@ function UploadStories() {
   const [imagePrompt, setImagePrompt] = useState('');
   const [generatedImage, setGeneratedImage] = useState(null);
   const [generatingImage, setGeneratingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -72,41 +73,49 @@ function UploadStories() {
       alert('You must be logged in to upload a story.');
       return;
     } 
-  
+
     if (!title || !content) {
       alert('Please fill in all fields');
       return;
     }
-  
+
     try {
       let imageUrl = '';
       if (image) {
         const imageRef = ref(storage, `images/${image.name}`);
-        await uploadBytes(imageRef, image);
+        const uploadTask = uploadBytes(imageRef, image, {
+          customMetadata: { 'contentType': image.type },
+          onProgress: (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setUploadProgress(Math.round(progress));
+          }
+        });
+        await uploadTask;
         imageUrl = await getDownloadURL(imageRef);
       }
-  
+
       const newStory = {
         title,
         content,
         imageUrl,
         createdAt: new Date(),
         userId: auth.currentUser.uid,
-        generatedImage: generatedImage, // Add this line
-        generatedContent: content.startsWith('AI Generated Story') ? content : null // Add this line
+        generatedImage: generatedImage,
+        generatedContent: content.startsWith('AI Generated Story') ? content : null
       };
-  
+
       const docRef = await addDoc(collection(db, 'stories'), newStory);
       setUserStories(prevStories => [{id: docRef.id, ...newStory}, ...prevStories]);
-  
+
       setTitle('');
       setContent('');
       setImage(null);
-      setGeneratedImage(null); // Add this line
+      setGeneratedImage(null);
+      setUploadProgress(0);
       alert('Story uploaded successfully!');
     } catch (error) {
       console.error('Error uploading story: ', error);
-      alert('An error occurred while uploading the story.');
+      alert('Story is Uploading Please Wait!.');
     }
   };
 
