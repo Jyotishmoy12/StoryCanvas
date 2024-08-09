@@ -302,7 +302,7 @@ function UploadStories() {
               )}
             </div>
             <button type="submit" className="submit-btn" disabled={isSubmitting}>
-            {isSubmitting ? 'Uploading...' : 'Upload Story'}
+            {isSubmitting ? 'Uploading the story please wait...' : 'Upload Story'}
           </button>
           {isUploading && (
             <div className="upload-loader">
