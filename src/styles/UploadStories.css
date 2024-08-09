@@ -470,3 +470,113 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.use-image {
+  background-color: #f8b400; 
+  border: none; 
+  border-radius: 25px; 
+  color: white;
+  padding: 10px 20px; 
+  font-size: 16px; 
+  font-weight: bold; 
+  text-align: center; 
+  text-decoration: none; 
+  display: inline-block; 
+  cursor: pointer; 
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; 
+}
+
+.use-image:hover {
+  background-color: #ffa500; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
+}
+
+.use-image:active {
+  background-color: #cc8400; 
+  box-shadow: none; 
+}
+
+
+.generated-image-preview {
+  max-width: 100%;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.generated-image-preview img {
+  max-width: 100%;
+  max-height: 400px; /* Increased from 300px */
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.use-image {
+  background-color: #f8b400;
+  border: none;
+  border-radius: 25px;
+  color: white;
+  padding: 12px 24px; /* Slightly larger padding */
+  font-size: 18px; /* Increased font size */
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  margin-top: 15px; /* Increased margin */
+}
+
+.use-image:hover {
+  background-color: #ffa500;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.use-image:active {
+  background-color: #cc8400;
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .generated-image-preview img {
+    max-height: 300px; /* Increased from 200px */
+  }
+
+  .use-image {
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+
+  .content-wrapper {
+    flex-direction: column;
+  }
+
+  .upload-form,
+  .stories-section {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .generated-image-preview img {
+    max-height: 200px; /* Increased from 150px */
+  }
+
+  .use-image {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-actions h2 {
+    margin-bottom: 10px;
+  }
+
+  .logout-btn {
+    align-self: flex-end;
+  }
+}

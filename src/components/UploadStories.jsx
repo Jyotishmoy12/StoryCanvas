@@ -184,7 +184,7 @@ function UploadStories() {
       const response = await result.response;
       const generatedText = response.text();
       
-      setTitle('AI Generated Story');
+      setTitle('');
       setContent(generatedText);
       setShowAIPrompt(false);
     } catch (error) {
@@ -297,7 +297,7 @@ function UploadStories() {
               {generatedImage && (
                 <div className="generated-image-preview">
                   <img src={generatedImage} alt="AI Generated" />
-                  <button onClick={handleUseGeneratedImage}>Use This Image</button>
+                  <button className="use-image" onClick={handleUseGeneratedImage}>Use This Image</button>
                 </div>
               )}
             </div>

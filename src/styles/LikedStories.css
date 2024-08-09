@@ -1,17 +1,71 @@
 .liked-story-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  padding-top: 100px; /* Increased top padding to ensure content is below navbar */
+}
+
+.liked-story-image-container {
+  width: 100%;
+  max-height: 400px;
+  margin-bottom: 20px;
+  overflow: hidden; /* Ensure image doesn't overflow its container */
+  border-radius: 8px; /* Rounded corners for the container */
+}
+
+.liked-story-image {
+  width: 100%;
+  height: auto; /* Changed from fixed height to auto */
+  object-fit: contain; /* Changed from cover to contain */
+  display: block; /* Removes any extra space below the image */
+}
+
+.liked-story-content {
+  line-height: 1.6;
+  font-size: 18px;
+}
+
+.liked-story-title {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .liked-story-container {
+    padding: 15px;
+    padding-top: 80px; /* Adjusted for smaller screens */
   }
-  
-  .liked-story-image {
-    width: 100%;
-    max-height: 400px;
-    object-fit: cover;
-    margin-bottom: 20px;
+
+  .liked-story-image-container {
+    max-height: 300px;
   }
-  
+
   .liked-story-content {
-    line-height: 1.6;
-    font-size: 18px;
+    font-size: 16px;
   }
+
+  .liked-story-title {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .liked-story-container {
+    padding: 10px;
+    padding-top: 70px; /* Further adjusted for very small screens */
+  }
+
+  .liked-story-image-container {
+    max-height: 250px;
+  }
+
+  .liked-story-content {
+    font-size: 14px;
+  }
+
+  .liked-story-title {
+    font-size: 22px;
+  }
+}
