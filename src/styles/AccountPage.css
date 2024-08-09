@@ -1,0 +1,41 @@
+.account-page-container {
+    padding: 20px;
+  }
+  
+  .liked-stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .story-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  .story-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .story-card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .story-card-content {
+    padding: 15px;
+  }
+  
+  .story-card-title {
+    margin: 0 0 10px 0;
+  }
+  
+  .story-card-description {
+    font-size: 14px;
+    color: #666;
+  }

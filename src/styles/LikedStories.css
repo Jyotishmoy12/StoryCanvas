@@ -1,0 +1,17 @@
+.liked-story-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .liked-story-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    margin-bottom: 20px;
+  }
+  
+  .liked-story-content {
+    line-height: 1.6;
+    font-size: 18px;
+  }

@@ -8,7 +8,7 @@ import SignUp from './components/SignUp';
 import Login from './components/Login';
 import StoryDetails from './components/StoryDetails';
 import OtherStoryView from './components/OtherStoryView';
-
+import LikedStories from './components/LikedStories';
 const App = () => {
   return (
     <Router>
@@ -22,6 +22,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/story/:id" element={<StoryDetails />} />
           <Route path="/other-story/:id" element={<OtherStoryView />} />
+          <Route path="/liked-story/:storyId" element={<LikedStories />} />
         </Routes>
       </div>
     </Router>

@@ -7,7 +7,8 @@ import { signOut } from 'firebase/auth';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import '../styles/UploadStories.css';
 import Navbar from './Navbar';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // Initialize the Gemini API
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
@@ -29,6 +30,7 @@ function UploadStories() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -75,14 +77,16 @@ function UploadStories() {
     setIsSubmitting(true);
   
     if (!auth.currentUser) {
-      alert('You must be logged in to upload a story.');
+      toast.error('You must be logged in to upload a story.');
       setIsSubmitting(false);
+      setIsUploading(false);
       return;
     } 
   
     if (!title || !content) {
-      alert('Please fill in all fields');
+      toast.warning('Please fill in all fields');
       setIsSubmitting(false);
+      setIsUploading(false);
       return;
     }
   
@@ -132,10 +136,10 @@ function UploadStories() {
       setImage(null);
       setGeneratedImage(null);
       setUploadProgress(0);
-      alert('Story uploaded successfully!');
+      toast.success('Story uploaded successfully!');
     } catch (error) {
       console.error('Error uploading story: ', error);
-      alert('An error occurred while uploading the story. Please try again.');
+      toast.error('An error occurred while uploading the story. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -146,10 +150,10 @@ function UploadStories() {
       try {
         await deleteDoc(doc(db, 'stories', id));
         setUserStories(prevStories => prevStories.filter(story => story.id !== id));
-        alert('Story deleted successfully');
+        toast.success('Story deleted successfully');
       } catch (error) {
         console.error('Error deleting story: ', error);
-        alert('An error occurred while deleting the story.');
+        toast.error('An error occurred while deleting the story.');
       }
     }
   };
@@ -257,6 +261,7 @@ function UploadStories() {
   return (
     <div className="upload-page">
       <Navbar />
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
       <div className="upload-container">
         <div className="header-actions">
           <h2>Upload and Manage Stories</h2>
@@ -296,7 +301,15 @@ function UploadStories() {
                 </div>
               )}
             </div>
-            <button type="submit" className="submit-btn">Upload Story</button>
+            <button type="submit" className="submit-btn" disabled={isSubmitting}>
+            {isSubmitting ? 'Uploading...' : 'Upload Story'}
+          </button>
+          {isUploading && (
+            <div className="upload-loader">
+              <div className="loader-spinner"></div>
+              <span>Uploading story...</span>
+            </div>
+          )}
           </form>
 
           <div className="stories-section">
