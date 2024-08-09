@@ -27,6 +27,7 @@ function UploadStories() {
   const [generatedImage, setGeneratedImage] = useState(null);
   const [generatingImage, setGeneratingImage] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -69,20 +70,28 @@ function UploadStories() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Add a flag to prevent double submission
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+  
     if (!auth.currentUser) {
       alert('You must be logged in to upload a story.');
+      setIsSubmitting(false);
       return;
     } 
-
+  
     if (!title || !content) {
       alert('Please fill in all fields');
+      setIsSubmitting(false);
       return;
     }
-
+  
     try {
+      console.log('Starting story upload...');
       let imageUrl = '';
       if (image) {
-        const imageRef = ref(storage, `images/${image.name}`);
+        // For uploaded images
+        const imageRef = ref(storage, `images/${auth.currentUser.uid}_${Date.now()}_${image.name}`);
         const uploadTask = uploadBytes(imageRef, image, {
           customMetadata: { 'contentType': image.type },
           onProgress: (snapshot) => {
@@ -92,21 +101,32 @@ function UploadStories() {
         });
         await uploadTask;
         imageUrl = await getDownloadURL(imageRef);
+      } else if (generatedImage) {
+        // For AI-generated images
+        const response = await fetch(generatedImage);
+        const blob = await response.blob();
+        const imageRef = ref(storage, `images/${auth.currentUser.uid}_${Date.now()}_ai_generated.png`);
+        await uploadBytes(imageRef, blob, { contentType: 'image/png' });
+        imageUrl = await getDownloadURL(imageRef);
       }
-
+  
       const newStory = {
         title,
         content,
         imageUrl,
         createdAt: new Date(),
         userId: auth.currentUser.uid,
-        generatedImage: generatedImage,
+        isAIGenerated: !!generatedImage,
         generatedContent: content.startsWith('AI Generated Story') ? content : null
       };
-
+  
+      console.log('Adding new story to Firestore...');
       const docRef = await addDoc(collection(db, 'stories'), newStory);
+      console.log('Story added successfully. Document ID:', docRef.id);
+  
       setUserStories(prevStories => [{id: docRef.id, ...newStory}, ...prevStories]);
-
+  
+      // Reset states after successful upload
       setTitle('');
       setContent('');
       setImage(null);
@@ -115,10 +135,11 @@ function UploadStories() {
       alert('Story uploaded successfully!');
     } catch (error) {
       console.error('Error uploading story: ', error);
-      alert('Story is Uploading Please Wait!.');
+      alert('An error occurred while uploading the story. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
   const handleDelete = async (id, e) => {
     e.stopPropagation();
     if (window.confirm('Are you sure you want to delete this story?')) {

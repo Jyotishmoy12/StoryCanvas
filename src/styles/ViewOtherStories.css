@@ -119,3 +119,31 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.like-button,
+.unlike-button {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.unlike-button {
+  background-color: #dc3545;
+}
+
+.like-button:hover,
+.unlike-button:hover {
+  opacity: 0.8;
+}
+
+.story-card {
+  cursor: pointer;
+}
