@@ -263,10 +263,10 @@ function UploadStories() {
       <Navbar />
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
       <div className="upload-container">
-        <div className="header-actions">
-          <h2>Upload and Manage Stories</h2>
-          <button onClick={handleLogout} className="logout-btn">Logout</button>
-        </div>
+      <div className="header-actions">
+        <h2>Upload and Manage Stories</h2>
+        <button onClick={handleLogout} className="logout-btn">Logout</button>
+      </div>
         <div className="content-wrapper">
           <form className="upload-form glassmorphism" onSubmit={handleSubmit}>
             <div className="form-group">
@@ -302,29 +302,27 @@ function UploadStories() {
               )}
             </div>
             <button type="submit" className="submit-btn" disabled={isSubmitting}>
-            {isSubmitting ? 'Uploading the story please wait...' : 'Upload Story'}
-          </button>
-          {isUploading && (
-            <div className="upload-loader">
-              <div className="loader-spinner"></div>
-              <span>Uploading story...</span>
-            </div>
-          )}
+              {isSubmitting ? 'Uploading the story please wait...' : 'Upload Story'}
+            </button>
+            {isUploading && (
+              <div className="upload-loader">
+                <div className="loader-spinner"></div>
+                <span>Uploading story...</span>
+              </div>
+            )}
           </form>
 
-          <div className="stories-section">
+          <div className="stories-section glassmorphism">
             <h3>Your Stories</h3>
             {userStories.length > 0 ? (
               <div className="story-grid">
                 {userStories.map(story => (
-                  <div key={story.id} className="story-card glassmorphism" onClick={() => handleStoryClick(story.id)}>
+                  <div key={story.id} className="story-card" onClick={() => handleStoryClick(story.id)}>
                     {story.imageUrl && <img src={story.imageUrl} alt={story.title} className="story-card-image" />}
                     <div className="story-card-content">
                       <h4 className="story-card-title">{story.title}</h4>
                       <p className="story-card-description">{story.content.substring(0, 100)}...</p>
-                      <div className="story-card-actions">
-                        <button className="btn-delete" onClick={(e) => handleDelete(story.id, e)}>Delete</button>
-                      </div>
+                      <button className="btn-delete" onClick={(e) => handleDelete(story.id, e)}>Delete</button>
                     </div>
                   </div>
                 ))}
@@ -335,15 +333,14 @@ function UploadStories() {
           </div>
         </div>
 
-        {/* AI Text Generation Button */}
-        <button className="ai-float-button text-ai" onClick={() => setShowAIPrompt(true)}>
-          AI Text
-        </button>
-
-        {/* AI Image Generation Button */}
-        <button className="ai-float-button image-ai" onClick={() => setShowImagePrompt(true)}>
-          AI Image
-        </button>
+        <div className="ai-buttons">
+          <button className="ai-float-button text-ai" onClick={() => setShowAIPrompt(true)}>
+            AI Text
+          </button>
+          <button className="ai-float-button image-ai" onClick={() => setShowImagePrompt(true)}>
+            AI Image
+          </button>
+        </div>
 
         {/* AI Text Prompt Modal */}
         {showAIPrompt && (
