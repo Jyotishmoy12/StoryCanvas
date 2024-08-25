@@ -1,4 +1,4 @@
-******StoryCanvas******
+## Getting Started
 
 *AI-driven story and image creation platform.
 
