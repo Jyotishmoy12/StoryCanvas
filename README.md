@@ -1,4 +1,4 @@
-##StoryCanvas
+#####STORYCANVAS
 
 *AI-driven story and image creation platform.
 
