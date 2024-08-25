@@ -73,6 +73,29 @@ function ViewOtherStories() {
     }
   };
 
+  const handleShare=(e, storyId)=>{
+    e.stopPropagation();
+    const shareLink=`${window.location.origin}/shared-story/${storyId}`;
+    if(navigator.share){
+      navigator.share({
+        title: 'Check out the story',
+        url: shareLink
+      }).then(()=>{
+        console.log('Shared successfully');
+      })
+      .catch((error)=>{
+        console.error("Error sharing. Please try again", error);
+      });
+    }else{
+      navigator.clipboard.writeText(shareLink).then(()=>{
+        alert('Link copied to clipboard');
+      })
+      .catch((error)=>{
+        console.error("failed to copy", error)
+      })
+    }
+  }
+
   return (
     <>
       <Navbar/>
@@ -97,6 +120,12 @@ function ViewOtherStories() {
                     className={`like-button ${user && story.likes.includes(user.uid) ? 'liked' : ''}`}
                   >
                     {user && story.likes.includes(user.uid) ? 'Unlike' : 'Like'} ({story.likes.length})
+                  </button>
+                  <button 
+                    onClick={(e) => handleShare(e, story.id)}
+                    className="share-button"
+                  >
+                    Share
                   </button>
                 </div>
               </div>

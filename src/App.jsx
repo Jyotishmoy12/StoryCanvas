@@ -9,6 +9,7 @@ import Login from './components/Login';
 import StoryDetails from './components/StoryDetails';
 import OtherStoryView from './components/OtherStoryView';
 import LikedStories from './components/LikedStories';
+import SharedStory from './components/SharedStory'
 const App = () => {
   return (
     <Router>
@@ -23,6 +24,7 @@ const App = () => {
           <Route path="/story/:id" element={<StoryDetails />} />
           <Route path="/other-story/:id" element={<OtherStoryView />} />
           <Route path="/liked-story/:storyId" element={<LikedStories />} />
+          <Route path="/shared-story/:id" element={<SharedStory />} />
         </Routes>
       </div>
     </Router>
