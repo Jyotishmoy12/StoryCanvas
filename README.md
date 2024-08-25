@@ -1,4 +1,5 @@
-#StoryCanvas
+##StoryCanvas
+
 *AI-driven story and image creation platform.
 
 ◦ Developed and implemented full user authentication using Firebase, supporting secure login via email,
@@ -24,29 +25,36 @@ seamless alerts and updates.
 ◦ Tech: ReactJs, CSS, Firebase, Firestore, Gemini API, Stable Diffusion API, React Toast, Vite.
 
 
-#Homepage
+##Homepage
+
 ![Screenshot 2024-08-25 175932](https://github.com/user-attachments/assets/3a163762-56d5-4372-b90e-118618078e6e)
 
-#UploadStories
+##UploadStories
+
 ![Screenshot 2024-08-25 180001](https://github.com/user-attachments/assets/c9c92971-922d-4cbe-8918-f134eecfa6e0)
 
-#Viewotherstories
+##Viewotherstories
 
 ![Screenshot 2024-08-25 175948](https://github.com/user-attachments/assets/a45bb29e-73a5-4abd-9738-c06f8f8eb8c8)
 
-#GeminiAPI
+##GeminiAPI
+
 ![Screenshot 2024-08-25 180009](https://github.com/user-attachments/assets/1c2c4f44-7f65-4007-bde1-d4ae1823e989)
 
-#StableDiffusionAPI
+##StableDiffusionAPI
+
 ![Screenshot 2024-08-25 180018](https://github.com/user-attachments/assets/58880757-3b60-4235-be46-68f1b778db1c)
 
-#LikedStories
+##LikedStories
+
 ![Screenshot 2024-08-25 180037](https://github.com/user-attachments/assets/d6fc0897-828f-4b85-923d-a8a588398947)
 
-#Comments
+##Comments
+
 ![Screenshot 2024-08-25 180057](https://github.com/user-attachments/assets/da806dd9-b65e-485d-aa30-b93480e3e3d9)
 
-#ShareStories
+##ShareStories
+
 ![Screenshot 2024-08-25 180114](https://github.com/user-attachments/assets/c1ef0bda-e406-4d6f-8370-7ba3094ed6d9)
 
 
