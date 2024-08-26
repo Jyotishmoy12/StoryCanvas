@@ -53,7 +53,7 @@ seamless alerts and updates.
 
 ![Screenshot 2024-08-25 180057](https://github.com/user-attachments/assets/da806dd9-b65e-485d-aa30-b93480e3e3d9)
 
-##ShareStories
+## ShareStories
 
 ![Screenshot 2024-08-25 180114](https://github.com/user-attachments/assets/c1ef0bda-e406-4d6f-8370-7ba3094ed6d9)
 
